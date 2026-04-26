@@ -1,0 +1,20 @@
+const express = require("express");
+const {
+  createRestaurant,
+  joinRestaurant,
+  getMenuItems,
+  getRestaurantsByUserId,
+  getRestaurant,
+} = require("../controllers/restaurant-controllers");
+const { authenticateToken } = require("../middlewares/auth-middleware");
+const { adminRestriction } = require("../middlewares/admin-restriction");
+
+const router = express.Router();
+
+router.post("/create", adminRestriction, createRestaurant);
+router.post("/join", adminRestriction, joinRestaurant);
+router.post("/menu", authenticateToken, getMenuItems);
+router.post("/info", authenticateToken, getRestaurant);
+router.post("/restaurants", adminRestriction, getRestaurantsByUserId);
+
+module.exports = router;
