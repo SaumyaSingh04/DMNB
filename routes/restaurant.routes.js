@@ -12,7 +12,7 @@ const { adminRestriction } = require("../middlewares/admin-restriction");
 const router = express.Router();
 
 router.post("/create", adminRestriction, createRestaurant);
-router.post("/join", adminRestriction, joinRestaurant);
+router.post("/join", authenticateToken, joinRestaurant);
 router.post("/menu", authenticateToken, getMenuItems);
 router.post("/info", authenticateToken, getRestaurant);
 router.post("/restaurants", adminRestriction, getRestaurantsByUserId);

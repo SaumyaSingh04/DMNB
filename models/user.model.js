@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["Admin", "User"],
+    enum: ["SuperAdmin", "Admin", "User"],
     required: true,
   },
   restaurants: [

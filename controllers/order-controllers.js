@@ -63,6 +63,8 @@ const verifyOrder = async (req, res) => {
       userId,
       status: "Pending",
       tableNumber,
+      paymentMethod: "Online",
+      paymentStatus: "Paid",
     });
 
     await User.findOneAndUpdate(
@@ -158,9 +160,37 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+const placeCODOrder = async (req, res) => {
+  const { restaurantId, userId, items, tableNumber } = req.body;
+
+  if (!restaurantId || !userId || !items?.length || !tableNumber) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    const order = await Orders.create({
+      items,
+      restaurantId,
+      userId,
+      status: "Pending",
+      tableNumber,
+      paymentMethod: "COD",
+      paymentStatus: "Pending",
+    });
+
+    await User.findOneAndUpdate({ _id: userId }, { $push: { orders: order._id } });
+    await Restaurant.findOneAndUpdate({ _id: restaurantId }, { $push: { orders: order._id } });
+
+    return res.status(201).json({ msg: "success", orderId: order._id });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 module.exports = {
   createOrder,
   verifyOrder,
+  placeCODOrder,
   getOrdersByRestaurantId,
   getOrdersByUserId,
   updateOrderStatus,

@@ -91,4 +91,67 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { createUser, loginUser };
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, "-password");
+    return res.status(200).json({ data: users });
+  } catch (error) {
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) return res.status(400).json({ error: "userId is required" });
+
+  try {
+    await User.findByIdAndDelete(userId);
+    return res.status(200).json({ data: "User deleted" });
+  } catch (error) {
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+const signup = async (req, res) => {
+  const { email, password, role } = req.body;
+
+  if (!email || !password || !role) {
+    return res.status(400).json({ error: "email, password and role are required" });
+  }
+
+  if (role !== "Admin" && role !== "User") {
+    return res.status(400).json({ error: "role must be Admin or User" });
+  }
+
+  try {
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    const user = await User.create({ email, password: hashedPassword, role });
+    const payload = { userId: user._id, email: user.email, role: user.role };
+    res.status(201).json({ token: signJwt(payload) });
+  } catch {
+    res.status(400).json({ error: "User already exists or invalid data" });
+  }
+};
+
+const createAdmin = async (req, res) => {
+  const { email, password, role } = req.body;
+
+  if (!email || !password || !role) {
+    return res.status(400).json({ error: "email, password and role are required" });
+  }
+
+  if (role !== "Admin" && role !== "SuperAdmin") {
+    return res.status(400).json({ error: "role must be Admin or SuperAdmin" });
+  }
+
+  try {
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    const user = await User.create({ email, password: hashedPassword, role });
+    res.status(201).json({ message: `${role} created`, email: user.email });
+  } catch (error) {
+    res.status(400).json({ error: "User already exists or invalid data" });
+  }
+};
+
+module.exports = { createUser, loginUser, getAllUsers, deleteUser, createAdmin, signup };

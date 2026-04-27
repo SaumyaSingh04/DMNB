@@ -5,9 +5,10 @@ const { User } = require("./models/user.model");
 
 const email = process.argv[2];
 const password = process.argv[3];
+const role = process.argv[4] === "superadmin" ? "SuperAdmin" : "Admin";
 
 if (!email || !password) {
-  console.error("Usage: node create-admin.js <email> <password>");
+  console.error("Usage: node create-admin.js <email> <password> [superadmin]");
   process.exit(1);
 }
 
@@ -21,9 +22,9 @@ async function createAdmin() {
   }
 
   const hashedPassword = bcrypt.hashSync(password, 10);
-  const admin = await User.create({ email, password: hashedPassword, role: "Admin" });
+  const admin = await User.create({ email, password: hashedPassword, role });
 
-  console.log(`Admin created: ${admin.email}`);
+  console.log(`${role} created: ${admin.email}`);
   process.exit(0);
 }
 

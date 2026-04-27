@@ -14,7 +14,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["https://digital-menu-sandy.vercel.app", "http://localhost:5173"],
+    origin: ["https://dmnf.vercel.app", "http://localhost:5173"],
   })
 );
 app.use(express.json());

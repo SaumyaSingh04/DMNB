@@ -29,7 +29,7 @@ const adminRestriction = async (req, res, next) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    if (user.role !== "Admin") {
+    if (user.role !== "Admin" && user.role !== "SuperAdmin") {
       return res.status(403).json({ error: "Unauthorized access to admin" });
     }
 
